@@ -1,0 +1,20 @@
+{
+  "name": "pdf2ppt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "pdf-officegen": "^2.0.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "telegraf": "^3.22.2",
+    "tough-cookie": "^2.4.3",
+    "uuid": "^3.3.2"
+  }
+}
