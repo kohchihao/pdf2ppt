@@ -4,15 +4,18 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init": "mkdir temp"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "del": "^3.0.0",
     "dotenv": "^6.0.0",
     "pdf-officegen": "^2.0.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
+    "signale": "^1.2.1",
     "telegraf": "^3.22.2",
     "tough-cookie": "^2.4.3",
     "uuid": "^3.3.2"
