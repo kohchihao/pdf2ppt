@@ -42,13 +42,15 @@ bot.on('document', ctx => {
         fs.mkdirSync('./temp/' + uuid);
       }
 
+      let fileName = document.file_name.slice(0,document.file_name.length-4);
+      
       //make request to download pdf file
       request(options)
-        .pipe(fs.createWriteStream('./temp/' + uuid + '/' + document.file_name))
+        .pipe(fs.createWriteStream('./temp/' + uuid + '/' + fileName + '.pdf'))
         .on('finish', () => {
           //console.log('finish downloading pdf..');
           log.success('finish downloading pdf...');
-          convert('./temp/' + uuid, document.file_name, ctx);
+          convert('./temp/' + uuid, fileName, ctx);
         })
         .on('error', error => {
           console.log('Error in creating map', error);
@@ -67,43 +69,43 @@ const convert = (path, fileName, ctx) => {
       'Content-Type': 'multipart/form-data'
     },
     formData: {
-      DynamicFile: fs.createReadStream(path + '/' + fileName),
+      DynamicFile: fs.createReadStream(path + '/' + fileName + '.pdf'),
       OutputFormat: 'PowerPoint'
     },
     resolveWithFullResponse: true
   })
-    .then(r => {
-      console.log('response', r.body);
-      ctx.reply('Converting your pdf.');
+  .then(r => {
+    console.log('response', r.body);
+    ctx.reply('Converting your pdf.');
 
-      let id = JSON.parse(r.body).id;
-      let cookieValue = r.headers['set-cookie'][0]
-        .split('=', 2)[1]
-        .slice(0, 24);
-      let cookie = new tough.Cookie({
-        key: 'ASP.NET_SessionId',
-        value: cookieValue,
-        domain: 'simplypdf.com',
-        httpOnly: true
-      });
-      let cookiejar = request.jar();
-      cookiejar.setCookie(cookie, 'https://simplypdf.com');
-      let options = {
-        method: 'GET',
-        uri: 'https://simplypdf.com/api/status/' + id,
-        headers: {
-          Accept: 'application/json'
-        },
-        jar: cookiejar,
-        resolveWithFullResponse: true
-      };
-
-      checkStatusAndDownload(ctx, options, cookiejar, path, fileName);
-    })
-    .catch(err => {
-      log.err('error @ converting', err);
-      ctx.reply('There was an error uploading your file. Please try again.');
+    let id = JSON.parse(r.body).id;
+    let cookieValue = r.headers['set-cookie'][0]
+      .split('=', 2)[1]
+      .slice(0, 24);
+    let cookie = new tough.Cookie({
+      key: 'ASP.NET_SessionId',
+      value: cookieValue,
+      domain: 'simplypdf.com',
+      httpOnly: true
     });
+    let cookiejar = request.jar();
+    cookiejar.setCookie(cookie, 'https://simplypdf.com');
+    let options = {
+      method: 'GET',
+      uri: 'https://simplypdf.com/api/status/' + id,
+      headers: {
+        Accept: 'application/json'
+      },
+      jar: cookiejar,
+      resolveWithFullResponse: true
+    };
+
+    checkStatusAndDownload(ctx, options, cookiejar, path, fileName);
+  })
+  .catch(err => {
+    log.err('error @ converting', err);
+    ctx.reply('There was an error uploading your file. Please try again.');
+  });
 };
 
 const checkStatusAndDownload = (ctx, options, cookiejar, path, fileName) => {
@@ -122,15 +124,15 @@ const checkStatusAndDownload = (ctx, options, cookiejar, path, fileName) => {
           resolveWithFullResponse: true
         };
 
-        let file_name = fileName.split('.')[0];
+        
         request(options)
-          .pipe(fs.createWriteStream(path + '/' + file_name + '.pptx'))
+          .pipe(fs.createWriteStream(path + '/' + fileName + '.pptx'))
           .on('finish', () => {
             log.success('finish downloading pptx...');
             ctx.reply('finish downloading pptx.');
             ctx.replyWithDocument({
-                source: path + '/' + file_name + '.pptx',
-                filename: file_name + '.pptx'
+                source: path + '/' + fileName + '.pptx',
+                filename: fileName + '.pptx'
               })
               .then(() => {
                 del([path]).then(paths => {
