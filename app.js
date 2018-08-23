@@ -26,7 +26,7 @@ bot.on('document', ctx => {
     console.log(ctx.message.document);
     let document = ctx.message.document;
     bot.telegram.getFileLink(document.file_id).then(data => {
-
+      ctx.reply('Received your file.');
       log.debug('File URL', data);
 
       let options = {
