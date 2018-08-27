@@ -157,4 +157,10 @@ bot.command('start', ctx => {
   );
 });
 
+bot.command('help', ctx => {
+  ctx.reply(
+    '/help'
+  );
+});
+
 bot.startPolling();
